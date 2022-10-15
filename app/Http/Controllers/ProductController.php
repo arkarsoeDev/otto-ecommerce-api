@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
+use App\Http\Resources\ProductResource;
 use App\Models\Photo;
 use Illuminate\Support\Str;
 
@@ -18,7 +19,7 @@ class ProductController extends Controller
     public function index()
     {
         $products = Product::latest('id')->paginate(10);
-        return response()->json($products);
+        return ProductResource::collection($products);
     }
 
     /**
@@ -63,7 +64,7 @@ class ProductController extends Controller
         if(is_null($product)) {
             return response()->json(["message" => "Product is not found"],404);
         }
-        return $product;
+        return new ProductResource($product);
     }
 
     /**
