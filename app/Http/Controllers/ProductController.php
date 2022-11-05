@@ -18,7 +18,17 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $products = Product::latest('id')->paginate(10);
+        $products = Product::when(request()->category, function ($query) {
+            return $query->whereHas('category', function ($query) {
+                return $query->where('slug', request()->category);
+            });
+        })->when(request()->sort, function ($query) {
+            if (request()->sort == 'low_high') {
+                return $query->orderBy('price');
+            } else if (request()->sort == 'high_low') {
+                return $query->orderBy('price', 'desc');
+            }
+        })->paginate(8)->withQueryString();
         return ProductResource::collection($products);
     }
 
@@ -55,16 +65,19 @@ class ProductController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int $id
+     * @param  string $slug
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($slug)
     {
-        $product = Product::find($id);
+        $product = Product::where('slug',$slug)->first();
+
+        $peopleAlsoBuy = Product::where('category_id',$product->category_id)->whereNot('id',$product->id)->inRandomOrder()->take(4)->get();
+
         if(is_null($product)) {
             return response()->json(["message" => "Product is not found"],404);
         }
-        return new ProductResource($product);
+        return response()->json(["success" => true,"data" => new ProductResource($product),"peopleAlsoBuy" => $peopleAlsoBuy]);
     }
 
     /**
@@ -76,6 +89,7 @@ class ProductController extends Controller
      */
     public function update(UpdateProductRequest $request, $id)
     {
+        return $request;
         $product = Product::find($id);
         if(is_null($product)) {
             return response()->json(["message" => "Product is not found"],404);

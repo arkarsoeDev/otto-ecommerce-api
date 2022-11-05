@@ -17,9 +17,10 @@ return new class extends Migration
             $table->id();
             $table->string('name')->unique();
             $table->string('slug')->unique();
-            $table->double('stock');
+            $table->unsignedInteger('stock');
             $table->string('details')->nullable();
             $table->double('price');
+            $table->boolean('featured')->default(false);
             $table->text('description');
             $table->foreignId('category_id')->constrained()->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreignId('brand_id')->constrained()->cascadeOnDelete()->cascadeOnUpdate();
