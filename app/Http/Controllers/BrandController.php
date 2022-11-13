@@ -29,29 +29,29 @@ class BrandController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'title' => 'required|string|min:3',
+            'name' => 'required|string|min:3',
             'description' => 'nullable|string',
         ]);
 
         $brand = Brand::create([
-            'title' => $request->title,
-            'slug' => Str::slug($request->title),
+            'name' => $request->name,
+            'slug' => Str::slug($request->name),
             'description' => $request->description,
         ]);
 
-        return response($brand, 201);
+        return response(new BrandResource($brand), 201);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  string $slug
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
-    public function show($slug)
+    public function show($id)
     {
-        $brand = Brand::where('slug', $slug)->first();
-        return response(ProductResource::collection($brand->products));
+        $brand = Brand::find($id);
+        return response(new BrandResource($brand));
     }
 
     /**
@@ -64,7 +64,7 @@ class BrandController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'title' => 'required|string|min:3',
+            'name' => 'nullable|string|min:3',
             'description' => 'nullable|string',
         ]);
 
@@ -74,8 +74,8 @@ class BrandController extends Controller
             return response()->json(["message" => "Can't find the brand"], 404);
         }
 
-        $brand->title = $request->title;
-        $brand->slug = Str::slug($brand->title);
+        $brand->name = $request->name ?? $brand->name;
+        $brand->slug = Str::slug($brand->name);
         $brand->description = $request->description;
 
         $brand->update();
