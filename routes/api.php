@@ -25,9 +25,7 @@ Route::prefix('v1')->group(function () {
 
     Route::apiResource('categories', CategoryController::class)->only(['index','show']);
     Route::apiResource('brands', BrandController::class)->only(['index','show']);
-    Route::apiResource('products', ProductController::class)->only(['index','show'])->parameters([
-        'products' => 'slug'
-    ]);;
+    Route::apiResource('products', ProductController::class)->only(['index','show']);
 
     Route::post('/checkout', [CheckoutController::class,'checkout'])->name('checkout.checkout');
     Route::post('/payment', [CheckoutController::class, 'store'])->name('checkout.store');

@@ -20,7 +20,7 @@ class BrandsTableSeeder extends Seeder
 
         foreach ($brands as $brand) {
             Brand::create([
-                'title' => $brand,
+                'name' => $brand,
                 'slug' => Str::slug($brand)
             ]);
         }

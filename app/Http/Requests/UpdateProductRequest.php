@@ -27,6 +27,8 @@ class UpdateProductRequest extends FormRequest
             "name" => "nullable|min:3|max:50",
             "price" => "nullable|numeric|min:1",
             "stock" => "nullable|numeric|min:1",
+            "category_id" => "nullable|exists:categories,id",
+            "brand_id" => "nullable|exists:brands,id",
         ];
     }
 }

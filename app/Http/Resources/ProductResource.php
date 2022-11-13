@@ -32,7 +32,7 @@ class ProductResource extends JsonResource
             "stockStatus" => $stockStatus,
             "category" => new CategoryResource($this->category),
             "brand" => new BrandResource($this->brand),
-            "photo" => PhotoResource::collection($this->photos)
+            "photos" => PhotoResource::collection($this->photos)
         ];
     }
 }

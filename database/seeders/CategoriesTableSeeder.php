@@ -20,7 +20,7 @@ class CategoriesTableSeeder extends Seeder
 
         foreach ($categories as $category) {
             Category::create([
-                'title' => $category,
+                'name' => $category,
                 'slug' => Str::slug($category)
             ]);
         }

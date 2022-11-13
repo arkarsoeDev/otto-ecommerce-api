@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StorePhotoRequest;
+use App\Http\Resources\PhotoResource;
 use App\Models\Photo;
 use Illuminate\Http\Request;
 
@@ -15,7 +16,9 @@ class PhotoController extends Controller
      */
     public function index()
     {
-        return Photo::all();
+        $photos = Photo::all();
+
+        return PhotoResource::collection($photos);
     }
 
     /**
@@ -33,8 +36,10 @@ class PhotoController extends Controller
                 "name" => $newName
             ]);
         }
+
+        $photos = Photo::where('product_id',$request->product_id)->get();
  
-        return response()->json(["message" => "photos are uploaded"]);
+        return response()->json(["message" => "photos are uploaded", "success" => true, "data" => PhotoResource::collection($photos)]);
     }
 
     /**
@@ -69,12 +74,12 @@ class PhotoController extends Controller
     public function destroy($id)
     {
         $photo = Photo::find($id);
-        if (is_null($photo)) {
+        if (is_null($photo)) {  
             return response()->json(["message" => "photo is not founnd"], 404);
         }
 
         $photo->delete();
 
-        return response()->json(["message" => "photo is deleted"], 204);
+        return response()->json(["message" => "photo is deleted"]);
     }
 }
