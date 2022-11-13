@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\CategoryResource;
-use App\Http\Resources\ProductResource;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -29,13 +28,13 @@ class CategoryController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'title' => 'required|string|min:3',
+            'name' => 'required|string|min:3',
             'description' => 'nullable|string',
         ]);
 
         $category = Category::create([
-            'title' => $request->title,
-            'slug' => Str::slug($request->title),
+            'name' => $request->name,
+            'slug' => Str::slug($request->name),
             'description' => $request->description,
         ]);
 
@@ -45,18 +44,18 @@ class CategoryController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  string $slug
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
-    public function show($slug)
+    public function show($id)
     {
-        $category = Category::where('slug',$slug)->first();
+        $category = Category::find($id);
 
         if (is_null($category)) {
             return response()->json(["message" => "Can't find product in this category"], 404);
         }
 
-        return response(ProductResource::collection($category->products));
+        return response(new CategoryResource($category));
     }
 
     /**
@@ -69,7 +68,7 @@ class CategoryController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'title' => 'required|string|min:3',
+            'name' => 'nullable|string|min:3',
             'description' => 'nullable|string',
         ]);
 
@@ -79,8 +78,8 @@ class CategoryController extends Controller
             return response()->json(["message" => "Can't find the category"], 404);
         }
 
-        $category->title = $request->title;
-        $category->slug = Str::slug($category->title);
+        $category->name = $request->name ?? $category->name;
+        $category->slug = Str::slug($category->name);
         $category->description = $request->description;
 
         $category->update();
