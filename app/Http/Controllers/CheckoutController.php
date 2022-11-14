@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\CheckoutRequest;
 use App\Http\Resources\ProductResource;
+use App\Models\Order;
+use App\Models\OrderProduct;
 use App\Models\Product;
 use Cartalyst\Stripe\Exception\CardErrorException;
 use Cartalyst\Stripe\Stripe;
@@ -41,6 +43,7 @@ class CheckoutController extends Controller
     public function store(CheckoutRequest $request)
     {
         $stripe = new Stripe(env('STRIPE_SECRET'));
+        $paymentIntent = $stripe->paymentIntents()->find($request->pi);
         try {
             $paymentMethod = $stripe->paymentMethods()->create([
                 'type' => 'card',
@@ -65,13 +68,21 @@ class CheckoutController extends Controller
                 'receipt_email' => $request->email,
             ]);
 
+            $this->addToOrdersTable($request, $paymentIntent, null);
+
             //add to order table
+            
             //decrease quantity
             //send mail
             //destroy cart
             return response()->json(['success' => true, 'success_message' =>'Thank you! Your payment has been successfully accepted']);
         } catch (CardErrorException $e) {
             //add to order table
+            $this->addToOrdersTable(
+                $request,
+                $paymentIntent,
+                $e->getMessage()
+            );
             //send mail
             return response()->json(['error' => $e->getMessage()],400);
         }
@@ -184,5 +195,29 @@ class CheckoutController extends Controller
             'totalAmount' => $totalAmount,
             'totalQuantity' => $totalQuantity,
         ]);
+    }
+
+    private function addToOrdersTable($request, $paymentIntent, $error) {
+        $order = Order::create([
+            'user_id' => auth()->user() ? auth()->user()->id : null,
+            'billing_email' => $request->email,
+            'billing_name' => $request->name,
+            'billing_address' => $request->address,
+            'billing_city' => $request->city,
+            'billing_state' => $request->state,
+            'billing_postal_code' => $request->postal_code,
+            'billing_phone' => $request->phone,
+            'billing_total' => $paymentIntent['amount'],
+            'error' => $error,
+        ]);
+
+        foreach (json_decode($paymentIntent['metadata']['contents']) as $item) {
+            $product = Product::where('slug', $item->slug)->first();
+            OrderProduct::create([
+                'order_id' => $order->id,
+                'product_id' => $product->id,
+                'quantity' => $item->quantity
+            ]);
+        }
     }
 }
