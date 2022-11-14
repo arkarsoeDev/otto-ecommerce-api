@@ -6,6 +6,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\PhotoController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -26,15 +27,16 @@ Route::prefix('v1')->group(function () {
     Route::apiResource('categories', CategoryController::class)->only(['index','show']);
     Route::apiResource('brands', BrandController::class)->only(['index','show']);
     Route::apiResource('products', ProductController::class)->only(['index','show']);
-
+    
     Route::post('/checkout', [CheckoutController::class,'checkout'])->name('checkout.checkout');
     Route::post('/payment', [CheckoutController::class, 'store'])->name('checkout.store');
-
+    
+    Route::apiResource('users', UserController::class);
     Route::middleware('auth:sanctum')->group(function () {
         Route::post("/logout", [ApiAuthController::class, 'logout'])->name('api.logout');
         Route::post("/logout-all", [ApiAuthController::class, 'logoutAll'])->name('api.logout-all');
         Route::get("/tokens", [ApiAuthController::class, 'tokens'])->name('api.tokens');
-
+        
         Route::apiResource('brands', BrandController::class)->only(['store','update','destroy']);
         Route::apiResource('products', ProductController::class)->only(['store','update','destroy']);
         Route::apiResource('categories', CategoryController::class)->only(['store','update','destroy']);
