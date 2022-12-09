@@ -20,7 +20,11 @@ class ProductController extends Controller
     {
         $perPage = request()->per_page ?? 8;
 
-        $products = Product::when(request()->category, function ($query) {
+        $products = Product::when(request()->search, function ($query) {
+            $query->where(function ($query) {
+                $query->where('name', 'like', "%" . request()->search . "%")->orWhere('details', 'like', "%" . request()->search . "%");
+            });
+        })->when(request()->category, function ($query) {
             $query->whereHas('category', function ($query) {
                 $query->where('slug', request()->category);
             });
@@ -42,8 +46,8 @@ class ProductController extends Controller
      */
     public function show($slug)
     {
-        $product = Product::where('slug',$slug)->first();
-        
+        $product = Product::where('slug', $slug)->first();
+
         if (is_null($product)) {
             return response()->json(["message" => "Product is not found"], 404);
         }
