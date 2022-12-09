@@ -23,7 +23,7 @@ class ProductResource extends JsonResource
             $stockStatus = "red";
         }
         return [
-            "id" => $this->id,
+            "id" => $this->id,  
             "name" => $this->name,
             "slug" => $this->slug,
             "price" => $this->price,
