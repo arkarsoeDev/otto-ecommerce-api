@@ -15,15 +15,15 @@ class ProductResource extends JsonResource
     public function toArray($request)
     {
         $stockStatus = "red";
-        if($this->stock > 5) {
+        if ($this->stock > 5) {
             $stockStatus = "green";
-        } elseif($this->stock > 0 && $this->stock < 5) {
+        } elseif ($this->stock > 0 && $this->stock < 5) {
             $stockStatus = "yellow";
         } else {
             $stockStatus = "red";
         }
         return [
-            "id" => $this->id,  
+            "id" => $this->id,
             "name" => $this->name,
             "slug" => $this->slug,
             "price" => $this->price,
@@ -32,7 +32,10 @@ class ProductResource extends JsonResource
             "stockStatus" => $stockStatus,
             "category" => new CategoryResource($this->category),
             "brand" => new BrandResource($this->brand),
-            "photos" => PhotoResource::collection($this->photos)
+            "photos" => PhotoResource::collection($this->photos),
+            "quantity" => $this->when(property_exists($this, 'quantity'), function () {
+                return $this->quantity;
+            })
         ];
     }
 }

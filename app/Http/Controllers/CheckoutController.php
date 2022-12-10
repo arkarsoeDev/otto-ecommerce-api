@@ -144,7 +144,13 @@ class CheckoutController extends Controller
             $product = Product::where('slug', $item->slug)->first();
             if (is_null($product)) {
                 return response()->json(["message" => "You can't purchase the products which are not provided"], 400);
-            } elseif ($product) {
+            } elseif($product->stock == 0) {
+                return response()->json(["message" => "$product->name is out of stock."], 400);
+            } 
+            elseif($product->stock < $item->quantity) {
+                return response()->json(["message" => "Only $product->stock items of $product->name is left."],400);
+            }
+            elseif ($product) {
                 $product = new ProductResource($product);
                 $product->quantity = $item->quantity;
                 $items[] =  $product;
