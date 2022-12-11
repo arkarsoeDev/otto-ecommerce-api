@@ -8,6 +8,7 @@ use App\Http\Requests\UpdateProductRequest;
 use App\Http\Resources\ProductResource;
 use App\Models\Photo;
 use App\Models\Product;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class ProductController extends Controller
@@ -59,7 +60,7 @@ class ProductController extends Controller
         $photos = [];
 
         foreach ($request->file("photos") as $key => $photo) {
-            $newName = $photo->store('public');
+            $newName = $photo->store('public/uploads');
             $photos[$key] = new Photo(['name' => $newName]);
         }
 
@@ -121,10 +122,12 @@ class ProductController extends Controller
     public function destroy($id)
     {
         $product = Product::find($id);
+        $photos = $product->photos->pluck('name')->toArray();
         if (is_null($product)) {
             return response()->json(["message" => "Product is not founnd"], 404);
         }
 
+        Storage::delete($photos);
         $product->delete();
 
         return response()->json(["message" => "Product is deleted"], 204);

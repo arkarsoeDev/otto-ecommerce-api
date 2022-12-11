@@ -54,6 +54,6 @@ class ProductController extends Controller
 
         $peopleAlsoBuy = Product::where('category_id', $product->category_id)->whereNot('id', $product->id)->inRandomOrder()->take(4)->get();
 
-        return response()->json(["success" => true, "data" => new ProductResource($product), "peopleAlsoBuy" => $peopleAlsoBuy]);
+        return response()->json(["success" => true, "data" => new ProductResource($product), "peopleAlsoBuy" => ProductResource::collection($peopleAlsoBuy)]);
     }
 }

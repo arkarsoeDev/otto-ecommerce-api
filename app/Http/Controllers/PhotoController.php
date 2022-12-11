@@ -6,6 +6,7 @@ use App\Http\Requests\StorePhotoRequest;
 use App\Http\Resources\PhotoResource;
 use App\Models\Photo;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class PhotoController extends Controller
 {
@@ -30,7 +31,7 @@ class PhotoController extends Controller
     public function store(StorePhotoRequest $request)
     {
         foreach($request->file('photos') as $key=>$photo) {
-            $newName = $photo->store("public"); 
+            $newName = $photo->store("public/uploads"); 
             Photo::create([
                 "product_id" => $request->product_id,
                 "name" => $newName
@@ -78,6 +79,7 @@ class PhotoController extends Controller
             return response()->json(["message" => "photo is not founnd"], 404);
         }
 
+        Storage::delete($photo->name);
         $photo->delete();
 
         return response()->json(["message" => "photo is deleted"]);

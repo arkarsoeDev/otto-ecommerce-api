@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Brand;
 use App\Models\Category;
+use App\Models\Photo;
 use App\Models\Product;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -19,7 +20,7 @@ class ProductsTableSeeder extends Seeder
     {
         // Laptops
         for ($i = 1; $i <= 30; $i++) {
-            Product::create([
+            $product = Product::create([
                 'name' => 'Laptop ' . $i,
                 'slug' => 'laptop-' . $i,
                 'stock' => rand(100,200),
@@ -29,11 +30,15 @@ class ProductsTableSeeder extends Seeder
                 'category_id' => Category::where('slug', 'laptop')->first()->id,
                 'brand_id' => Brand::inRandomOrder()->first()->id,
             ]);
+            Photo::create([
+                "product_id" => $product->id,
+                "name" => 'public/uploads/'.$product->slug.'.jpg'
+            ]);
         }
 
         // Desktops
         for ($i = 1; $i <= 9; $i++) {
-            Product::create([
+            $product = Product::create([
                 'name' => 'Desktop ' . $i,
                 'slug' => 'desktop-' . $i,
                 'stock' => rand(100,200),
@@ -43,11 +48,15 @@ class ProductsTableSeeder extends Seeder
                 'category_id' => Category::where('slug', 'desktop')->first()->id,
                 'brand_id' => Brand::inRandomOrder()->first()->id,
             ]);
+            Photo::create([
+                "product_id" => $product->id,
+                "name" => 'public/uploads/'.$product->slug.'.jpg'
+            ]);
         }
 
         // Phones
         for ($i = 1; $i <= 9; $i++) {
-            Product::create([
+            $product = Product::create([
                 'name' => 'Phone ' . $i,
                 'slug' => 'phone-' . $i,
                 'stock' => rand(100,200),
@@ -57,11 +66,15 @@ class ProductsTableSeeder extends Seeder
                 'category_id' => Category::where('slug', 'phone')->first()->id,
                 'brand_id' => Brand::inRandomOrder()->first()->id,
             ]);
+            Photo::create([
+                "product_id" => $product->id,
+                "name" => 'public/uploads/'.$product->slug.'.jpg'
+            ]);
         }
 
         // Tablets
         for ($i = 1; $i <= 9; $i++) {
-            Product::create([
+            $product = Product::create([
                 'name' => 'Tablet ' . $i,
                 'slug' => 'tablet-' . $i,
                 'stock' => rand(100,200),
@@ -71,11 +84,15 @@ class ProductsTableSeeder extends Seeder
                 'category_id' => Category::where('slug', 'tablet')->first()->id,
                 'brand_id' => Brand::inRandomOrder()->first()->id,
             ]);
+            Photo::create([
+                "product_id" => $product->id,
+                "name" => 'public/uploads/'.$product->slug.'.jpg'
+            ]);
         }
 
         // TVs
         for ($i = 1; $i <= 9; $i++) {
-            Product::create([
+            $product = Product::create([
                 'name' => 'TV ' . $i,
                 'slug' => 'tv-' . $i,
                 'stock' => rand(100, 200),
@@ -85,11 +102,16 @@ class ProductsTableSeeder extends Seeder
                 'category_id' => Category::where('slug', 'tv')->first()->id,
                 'brand_id' => Brand::inRandomOrder()->first()->id,
             ]);
+
+            Photo::create([
+                "product_id" => $product->id,
+                "name" => 'public/uploads/'.$product->slug.'.jpg'
+            ]);
         }
 
         // Cameras
         for ($i = 1; $i <= 9; $i++) {
-            Product::create([
+            $product = Product::create([
                 'name' => 'Camera ' . $i,
                 'slug' => 'camera-' . $i,
                 'stock' => rand(100,200),
@@ -98,6 +120,10 @@ class ProductsTableSeeder extends Seeder
                 'description' => 'Lorem ' . $i . ' ipsum dolor sit amet, consectetur adipisicing elit. Ipsum temporibus iusto ipsa, asperiores voluptas unde aspernatur praesentium in? Aliquam, dolore!',
                 'category_id' => Category::where('slug','camera')->first()->id,
                 'brand_id' => Brand::inRandomOrder()->first()->id,
+            ]);
+            Photo::create([
+                "product_id" => $product->id,
+                "name" => 'public/uploads/'.$product->slug.'.jpg'
             ]);
         }
     }
