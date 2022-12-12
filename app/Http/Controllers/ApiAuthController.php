@@ -13,7 +13,7 @@ class ApiAuthController extends Controller
         $request->validate([
             "name" => "required|min:3",
             "email" => "required|email|unique:users,email",
-            "password" => "required|min:8:confirmed"
+            "password" => "required|min:8|confirmed"
         ]);
 
         $user = User::create([

@@ -3,11 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
-use App\Http\Requests\StoreProductRequest;
-use App\Http\Requests\UpdateProductRequest;
 use App\Http\Resources\ProductResource;
-use App\Models\Photo;
-use Illuminate\Support\Str;
 
 class ProductController extends Controller
 {
@@ -19,7 +15,7 @@ class ProductController extends Controller
     public function index()
     {
         $perPage = request()->per_page ?? 8;
-
+        $count = request()->count ?? 8;
         $products = Product::when(request()->search, function ($query) {
             $query->where(function ($query) {
                 $query->where('name', 'like', "%" . request()->search . "%")->orWhere('details', 'like', "%" . request()->search . "%");
@@ -34,7 +30,12 @@ class ProductController extends Controller
             } else if (request()->sort == 'high_low') {
                 $query->orderBy('price', 'desc');
             }
-        })->paginate($perPage)->withQueryString();
+        });
+        if(request('paginate') === 'true') {
+            $products = $products->paginate($perPage)->withQueryString();
+        } else {
+            $products = $products->latest('id')->take($count)->get();
+        }
         return ProductResource::collection($products);
     }
 
