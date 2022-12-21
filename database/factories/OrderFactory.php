@@ -17,6 +17,7 @@ class OrderFactory extends Factory
      */
     public function definition()
     {
+        $date = $this->faker->dateTimeBetween('-7 days');
         return [
             'user_id' => User::inRandomOrder()->first()->id,
             'billing_email' => fake()->email(),
@@ -27,6 +28,7 @@ class OrderFactory extends Factory
             'billing_postal_code' => fake()->countryCode(),
             'billing_phone' => fake()->phoneNumber(),
             'billing_total' => fake()->numberBetween(1000,10000),
+            'created_at' => $date,
         ];
     }
 }

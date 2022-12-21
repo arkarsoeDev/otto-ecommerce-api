@@ -16,12 +16,23 @@ class OrderController extends Controller
      */
     public function index()
     {
-        if(!(auth()->user())) {
+        if (!(auth()->user())) {
             return response()->json(["message" => "User is not found"], 404);
         }
         $perPage = request()->per_page ?? 8;
 
-        $orders = Order::where('user_id',request()->user()->id)->paginate($perPage)->withQueryString();
+        $orders = Order::where('user_id', request()->user()->id)
+            ->when(
+                request()->search,
+                fn ($query, $search) =>
+                $query->where(
+                    fn ($query) =>
+                    $query
+                        ->where('id', 'like', "%" . $search . "%")
+                        ->orWhere('billing_phone', 'like', "%" . $search . "%")
+                )
+            )
+            ->paginate($perPage)->withQueryString();
         return OrderResource::collection($orders);
     }
 

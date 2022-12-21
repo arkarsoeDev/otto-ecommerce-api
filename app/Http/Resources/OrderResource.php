@@ -17,6 +17,7 @@ class OrderResource extends JsonResource
         return [
             "id" => $this->id,
             "billing_name" => $this->billing_name,
+            "billing_email" => $this->billing_email,
             "billing_address" => $this->billing_address,
             "billing_city" => $this->billing_city,
             "billing_state" => $this->billing_state,
@@ -24,7 +25,7 @@ class OrderResource extends JsonResource
             "billing_total" => $this->billing_total,
             "shipped" => $this->shipped,
             "customer" => new UserResource($this->user),
-            "created_at" => $this->created_at,
+            "created_at" => strtotime($this->created_at),
         ];
     }
 }

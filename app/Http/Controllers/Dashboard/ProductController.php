@@ -22,17 +22,8 @@ class ProductController extends Controller
     {
         $perPage = request()->per_page ?? 8;
 
-        $products = Product::when(request()->category, function ($query) {
-            $query->whereHas('category', function ($query) {
-                $query->where('slug', request()->category);
-            });
-        })->when(request()->sort, function ($query) {
-            if (request()->sort == 'low_high') {
-                $query->orderBy('price');
-            } else if (request()->sort == 'high_low') {
-                $query->orderBy('price', 'desc');
-            }
-        })->paginate($perPage)->withQueryString();
+        $products = Product::filter(request(['search']))
+        ->paginate($perPage)->withQueryString();
         return ProductResource::collection($products);
     }
 
@@ -52,6 +43,7 @@ class ProductController extends Controller
             "price" => $request->price,
             "stock" => $request->stock,
             "details" => $request->details,
+            "featured" => $request->featured,
             "brand_id" => $request->brand_id,
             "category_id" => $request->category_id,
             "description" => "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Ab ut cupiditate ea. Eaque fugiat nihil quae eligendi harum possimus"
@@ -103,7 +95,9 @@ class ProductController extends Controller
         $product->name = $request->name ?? $product->name;
         $product->slug = $request->name ? Str::slug($request->name) : $product->slug;
         $product->price = $request->price ?? $product->price;
+        $product->featured = $request->featured ?? $product->featured;
         $product->details = $request->details ?? $product->details;
+        $product->description = $request->description ?? $product->description;
         $product->brand_id = $request->brand_id ?? $product->brand_id;
         $product->category_id = $request->category_id ?? $product->category_id;
         $product->stock = $request->stock ?? $product->stock;

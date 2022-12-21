@@ -16,23 +16,10 @@ class ProductController extends Controller
     {
         $perPage = request()->per_page ?? 8;
         $count = request()->count ?? 8;
-        $products = Product::when(request()->search, function ($query) {
-            $query->where(function ($query) {
-                $query->where('name', 'like', "%" . request()->search . "%")->orWhere('details', 'like', "%" . request()->search . "%");
-            });
-        })->when(request()->category, function ($query) {
-            $query->whereHas('category', function ($query) {
-                $query->where('slug', request()->category);
-            });
-        })->when(request()->sort, function ($query) {
-            if (request()->sort == 'low_high') {
-                $query->orderBy('price');
-            } else if (request()->sort == 'high_low') {
-                $query->orderBy('price', 'desc');
-            }
-        });
+        
+        $products = Product::filter(request(['search','category','sort']));
         if(request('paginate') === 'true') {
-            $products = $products->paginate($perPage)->withQueryString();
+            $products = $products->latest('id')->paginate($perPage)->withQueryString();
         } else {
             $products = $products->latest('id')->take($count)->get();
         }

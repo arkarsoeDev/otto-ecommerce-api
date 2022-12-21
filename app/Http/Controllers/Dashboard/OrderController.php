@@ -19,7 +19,16 @@ class OrderController extends Controller
     {
         $perPage = request()->per_page ?? 8;
 
-        $orders = Order::paginate($perPage)->withQueryString();
+        $orders = Order::when(
+            request()->search,
+            fn ($query, $search) =>
+            $query->whereHas('user',
+                fn ($query) =>
+                $query
+                    ->where('name', 'like', "%" . $search . "%")
+            )
+        )
+            ->paginate($perPage)->withQueryString();
         return OrderResource::collection($orders);
     }
 
@@ -59,7 +68,7 @@ class OrderController extends Controller
     public function show($id)
     {
         $order = Order::find($id);
-        if(is_null($order)) {
+        if (is_null($order)) {
             return response()->json(["message" => "Order is not found"], 404);
         }
 

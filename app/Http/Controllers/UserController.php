@@ -21,7 +21,7 @@ class UserController extends Controller
     {
         $perPage = request()->per_page ?? 8;
 
-        $users = User::paginate($perPage)->withQueryString();
+        $users = User::filter(request(['search']))->paginate($perPage)->withQueryString();
         return UserResource::collection($users);
     }
 
@@ -74,8 +74,11 @@ class UserController extends Controller
         if (is_null($user)) {
             return response()->json(["message" => "User is not found"], 404);
         }
-
-        $user->password = Hash::make($request->password);
+        $user->name = $request->name;
+        $user->email = $request->email;
+        if($request->has('password')) {
+            $user->password = Hash::make($request->password);
+        }
 
         $user->update();
 

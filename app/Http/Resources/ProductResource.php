@@ -35,7 +35,8 @@ class ProductResource extends JsonResource
             "photos" => PhotoResource::collection($this->photos),
             "quantity" => $this->when(property_exists($this, 'quantity'), function () {
                 return $this->quantity;
-            })
+            }),
+            "created_at" => strtotime($this->created_at)
         ];
     }
 }
